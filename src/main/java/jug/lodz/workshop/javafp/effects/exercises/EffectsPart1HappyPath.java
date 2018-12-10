@@ -89,16 +89,30 @@ public class EffectsPart1HappyPath {
         static Function<BigDecimal,Function<Customer, BigDecimal>> discountV2 = null;
 
         //EXERCISE
-        //similar to previous but use suuplier to provide default value
+        //similar to previous but use suplier to provide default value
         //this may be handy if calculation of default value is time consuming
-        static Function<Supplier<BigDecimal>,Function<Customer, BigDecimal>> discountV3 = null;
+        static Function<Supplier<BigDecimal>,Function<Customer, BigDecimal>> discountV3 = d->c-> {
+            final BigDecimal customerDiscount = discountForCustomer.apply(c);
+            final BigDecimal cityDiscount = discountForACity.apply(c.city);
+
+            if(!customerDiscount.equals(BigDecimal.ZERO)) {
+                return customerDiscount;
+            } else if(cityDiscount.equals(BigDecimal.ZERO)) {
+                return cityDiscount;
+            } else {
+                return d.get();
+            }
+        };
+
 
         //EXERCISE
         //add prices from all products in purchase
-        static Function<Purchase,BigDecimal> calculatePrice= null;
+        static Function<Purchase,BigDecimal> calculatePrice= p ->
+            p.getLines().stream().map(line -> line.product.price).reduce(BigDecimal.ZERO, BigDecimal::add);
+
 
         //1)what if I want to postpone decision about discount? Currently it is hardcoded or provided
-        //at the very begining
+        //at the very beginning
         //2) How do I know if given value was a default value?
         static Function<Purchase,Tuple3<BigDecimal,BigDecimal,BigDecimal>> charge = p-> Tuple
                 .of(calculatePrice.apply(p),discountV1.apply(p.customer))

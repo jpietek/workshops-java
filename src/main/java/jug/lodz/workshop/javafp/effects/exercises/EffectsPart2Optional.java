@@ -92,8 +92,8 @@ public class EffectsPart2Optional {
         print("\n[EXERCISE1]");
         print("  * DEFINE OPTIONAL");
 
-        Optional<String> someString=null;
-        Optional<String> noneString=null;
+        Optional<String> someString=Optional.of("value");
+        Optional<String> noneString=Optional.empty();
 
         String value=null; // LEAVE THIS AS NULL! THIS IS PART OF EXERCISE
         Optional<String> nullString=null; // CREATE FROM NULL VALUE
@@ -113,16 +113,16 @@ public class EffectsPart2Optional {
 
     //EXERCISE 2
     static <A,B> Optional<B> findInMap(Map<A,B> map,A key){
-        return null;
+        return Optional.ofNullable(map.get(key));
     }
 
     static void exercise2(){
         print("\n[EXERCISE2]");
 
-        Map<String,String> sourceOne = new HashMap<String,String>(){{
+        Map<String,String> sourceOne = new HashMap<>(){{
             put("Joe","10.0");
         }};
-        Map<String,String> sourceTwo = new HashMap<String,String>(){{
+        Map<String,String> sourceTwo = new HashMap<>(){{
             put("Jane","30.0");
         }};
 

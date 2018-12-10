@@ -22,8 +22,9 @@ public class FP1FunctionalTypeAndAliasesAnswers {
 
     public static Function<Function<Integer,Integer>,Integer> add2= intTointFunction->intTointFunction.apply(1);
 
-    public static Function<Function<Integer,Integer>,Function<Integer,Integer>> add3=
-            intTointFunction->arg->intTointFunction.apply(arg);
+    public static Function<Function<Integer,Integer>,Function<Integer,Integer>> add3 =
+        f->arg->f.apply(arg);
+//            intTointFunction->arg->intTointFunction.apply(arg);
 
     public static Function<Int_to_Int,Int_to_Int> add3Aliases=
             intTointFunction->arg->intTointFunction.apply(arg);

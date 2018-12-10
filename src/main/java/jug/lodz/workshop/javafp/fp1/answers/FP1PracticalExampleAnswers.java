@@ -27,7 +27,7 @@ public class FP1PracticalExampleAnswers {
 
         findPurchase(1).map(pureDomainFunction).ifPresent(result-> System.out.println("sum for purchase 1 : "+result));
 
-        BigDecimal priceOfPurchase3 = findPurchase(3).map(pureDomainFunction).orElseThrow(() -> new RuntimeException("there is no purchase with id 3"));
+        BigDecimal priceOfPurchase3 = findPurchase(2).map(pureDomainFunction).orElseThrow(() -> new RuntimeException("there is no purchase with id 3"));
         System.out.println("somehow we have found price of purchase 3 : "+priceOfPurchase3);
     }
 

@@ -14,10 +14,13 @@ public class FP1FunctionsCompositionAnswer {
         //exercise 2
         Function<String,Integer> parse=Integer::parseInt;
         Function<Integer,Integer> twice=i->i*2;
-        print(andThen(parse,twice).apply("5"));
+        //print(andThen(parse,twice).apply("5"));
+        print(parse.andThen(twice).apply("5"));
 
         //exercise 3
-        print(compose(twice,parse).apply("7"));
+        //print(compose(twice,parse).apply("7"));
+        print(twice.compose(parse).apply("7"));
+
 
 
     }
