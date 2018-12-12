@@ -34,28 +34,24 @@ public class EffectsPart3MultipleOptionals {
         };
 
         Function<Integer, Optional<String>> lookup = id -> (id == 5) ? Optional.of("Zygfryd") : Optional.empty();
-//KATA
-//        Optional<Optional<String>> result1 = parse.apply("10").map(lookup);
-//        print("  * MAP : parse & lookup : " + result1);
 
+        Optional<Optional<String>> result1 = parse.apply("10").map(lookup);
+        print("  * MAP : parse & lookup : " + result1);
 
         print("  * [MAP : phases]");
-//        Optional<Integer> parsingResult = parse.apply("10");
-//        print("  * MAP : parsing result : " + parsingResult);
-//
-//        Optional<Optional<String>> lookupResult = parsingResult.map(lookup);
-//        print("  * MAP : lookup result : " + lookupResult);
+        Optional<Integer> parsingResult = parse.apply("10");
+        print("  * MAP : parsing result : " + parsingResult);
 
+        Optional<Optional<String>> lookupResult = parsingResult.map(lookup);
+        print("  * MAP : lookup result : " + lookupResult);
 
-//KATA
-//        Optional<String> flatMapResult = parse.apply("10").flatMap(lookup);
-//        print("  * FLATMAP : " + flatMapResult);
-
+        Optional<String> flatMapResult = parse.apply("10").flatMap(lookup);
+        print("  * FLATMAP : " + flatMapResult);
 
         print("\n  * [FLAT MAP COMBINATIONS]");
-//        print("  * Some.flatMap[Some] : " + Optional.of(1).flatMap(i -> Optional.of(i + 1)));
-//        print("  * Some.flatMap[None] : " + Optional.of(1).flatMap(i -> Optional.empty()));
-//        print("  * None.flatMap[Some] : " + Optional.<Integer>empty().flatMap(i -> Optional.of(i + 1)));
+        print("  * Some.flatMap[Some] : " + Optional.of(1).flatMap(i -> Optional.of(i + 1)));
+        print("  * Some.flatMap[None] : " + Optional.of(1).flatMap(i -> Optional.empty()));
+        print("  * None.flatMap[Some] : " + Optional.<Integer>empty().flatMap(i -> Optional.of(i + 1)));
 
         print("\n  * [JAVA SLANG FOR]");
 
@@ -64,7 +60,6 @@ public class EffectsPart3MultipleOptionals {
         ).yield((a, b, c) -> a + b + c);
 
         javaslangResult.forEach(r -> print("  * Javaslang Result : " + r));
-
 
         Iterator<Integer> javaslangNoneResult = For(
                 Option.of(1), Option.<Integer>none(), Option.of(3)
@@ -80,6 +75,7 @@ public class EffectsPart3MultipleOptionals {
 
         sequentialResult.forEach(r -> print("  * Javaslang sequential result : " + r));
 
+        exerciseLevel1();
 
     }
 
@@ -89,7 +85,7 @@ public class EffectsPart3MultipleOptionals {
 
     static void exerciseLevel1() {
         print("\n[EXERCISE1]");
-        Map<String, Integer> searchId = new HashMap<String, Integer>() {{
+        Map<String, Integer> searchId = new HashMap<>() {{
             put("Joe", 1);
             put("Jane", 2);
         }};
@@ -98,14 +94,16 @@ public class EffectsPart3MultipleOptionals {
         }};
 
         //EXERCISE - USE BOTH MAPS TO SEARCH FOR DISCOUNT 1)FIRST FIND ID, 2) THEN FIND DISCOUNT
-        Optional<BigDecimal> discountForJoe = null;
-        Optional<BigDecimal> discountForJane = null;
+        Optional<BigDecimal> discountForJoe = findInMap(searchId, "Joe").flatMap(i -> findInMap(discountForUser, i));
+
+        Optional<BigDecimal> discountForJane = findInMap(searchId, "Jane").flatMap(i -> findInMap(discountForUser, i));
 
         print("  * existing discount : " + discountForJoe.get().equals(new BigDecimal("0.3")));
         print("  * none discount : " + (discountForJane.isPresent() == false));
 
         //FORMULA =  PRICE - (PRICE * DISCOUNT)
-        Function<BigDecimal, Function<BigDecimal, BigDecimal>> calculateFinalPrice = null;
+        Function<BigDecimal, Function<BigDecimal, BigDecimal>> calculateFinalPrice = price -> discount ->
+                price.subtract(price.multiply(discount));
 
         Optional<BigDecimal> finalPrice = discountForJoe.map(calculateFinalPrice.apply(new BigDecimal("100")));
 
@@ -122,10 +120,11 @@ public class EffectsPart3MultipleOptionals {
         print("\n[EXERCISE2]");
 
         //retrieve consultant from purchase - Optional because it can be empty
-        Function<Purchase, Optional<Consultant>> getConsultant = null;
+        Function<Purchase, Optional<Consultant>> getConsultant = p -> Optional.ofNullable(p.consultant);
 
         // If consultant has an email then return email, otherwise return phone number
-        Function<Consultant, Optional<String>> getContactInfo = null;
+        Function<Consultant, Optional<String>> getContactInfo = c ->
+            Option.of(c.email).orElse(Option.of(c.phoneNumber)).toJavaOptional();
 
         Function<Purchase, HTML> displayConsultant = p ->
                 getConsultant.apply(p)
@@ -148,7 +147,7 @@ public class EffectsPart3MultipleOptionals {
         print("\n[EXERCISE3]");
         //EXERICISE - USE JAVASLANG API TO RETRIEVE CONSULTANT INFO
         Function<Purchase, String> consultantInfo = p -> API.For(Option.of(p.consultant), (Consultant c) ->
-                For(null).<String>yield(null)
+                For(Option.of(c.email).orElse(Option.of(c.phoneNumber))).<String>yield(i -> "info: " + i)
         ).getOrElse("In case of any problems contact [MAIN NUMBER]");
 
 
