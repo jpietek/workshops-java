@@ -43,10 +43,9 @@ public class EffectsPart4Error {
                                 .flatMap(b -> divide.apply(a, b)));
 
         print(" * [PARSE AND DIVIDE WITH OPTION]");
-// KATA
-//        print("  * 4/2 : " + parseAndDivide.apply("4", "2"));
-//        print("  * 4/aaa : " + parseAndDivide.apply("4", "aaa"));
-//        print("  * 4/0 : " + parseAndDivide.apply("4", "0"));
+        print("  * 4/2 : " + parseAndDivide.apply("4", "2"));
+        print("  * 4/aaa : " + parseAndDivide.apply("4", "aaa"));
+        print("  * 4/0 : " + parseAndDivide.apply("4", "0"));
 
 
         Function<String, Try<Integer>> tryParse = s -> Try.of(() -> Integer.parseInt(s)); //LAZY !! EXPLAIN
@@ -59,16 +58,12 @@ public class EffectsPart4Error {
                                 .flatMap(b -> tryDivide.apply(a, b)));
 
         print(" * [PARSE AND DIVIDE WITH TRY]");
-// KATA
-//        print("  * 4/2 : " + tryParseAndDivide.apply("4", "2"));
-//        print("  * 4/aaa : " + tryParseAndDivide.apply("4", "aaa"));
-//        print("  * 4/0 : " + tryParseAndDivide.apply("4", "0"));
+        print("  * 4/2 : " + tryParseAndDivide.apply("4", "2"));
+        print("  * 4/aaa : " + tryParseAndDivide.apply("4", "aaa"));
+        print("  * 4/0 : " + tryParseAndDivide.apply("4", "0"));
 
-
-
-// KATA
-//        tryParseAndDivide.apply("4", "aaa").onSuccess(result -> print("  * success : " + result));
-//        tryParseAndDivide.apply("4", "2").onSuccess(result -> print("  * success : " + result));
+        tryParseAndDivide.apply("4", "aaa").onSuccess(result -> print("  * success : " + result));
+        tryParseAndDivide.apply("4", "2").onSuccess(result -> print("  * success : " + result));
 
         BiFunction<String, String, HTML> divideAndRecover = (a, b) -> tryParseAndDivide.apply(a, b)
                 .map(i -> "<div>Result is " + i + " </div>")
@@ -79,9 +74,12 @@ public class EffectsPart4Error {
                 );
 
         print(" * [CALCULATION AND RECOVER]");
-//        print("  * 4/2 : " + divideAndRecover.apply("4", "2"));
-//        print("  * 4/0 : " + divideAndRecover.apply("4", "0"));
-//        print("  * 4/aaa : " + divideAndRecover.apply("4", "aaa"));
+        print("  * 4/2 : " + divideAndRecover.apply("4", "2"));
+        print("  * 4/0 : " + divideAndRecover.apply("4", "0"));
+        print("  * 4/aaa : " + divideAndRecover.apply("4", "aaa"));
+
+        exerciseLevel1();
+        exerciseLevel2();
     }
 
     static void exerciseLevel1() {
@@ -92,12 +90,16 @@ public class EffectsPart4Error {
         Try<Integer> try3 = Try.success(3);
 
         //EXERCISE - USE flatMap & map
-        Try<Integer> flatMapResult = try1.flatMap(null);
+        Try<Integer> flatMapResult = try1.flatMap(i1 ->
+                try2.flatMap(i2 ->
+                        try3.map(i3 -> i1 + i2 +i3)
+                )
+        );
 
         print("  * flatMap Result: " + (flatMapResult.get() == 6));
 
         //EXERCISE - sum with For - yield
-        Iterator<Integer> forResult = For(try1, try2, try3).yield(null);
+        Iterator<Integer> forResult = For(try1, try2, try3).yield((i1, i2, i3) -> i1 + i2 + i3);
 
         print("  * for Result: " + (forResult.get() == 6));
 
@@ -111,16 +113,19 @@ public class EffectsPart4Error {
                 id == 1 ? Try.success(data().purchase1) : Try.failure(new ConnectException("Timeout"));
 
         String result1 = readPurchase.apply(1)
-                .recoverWith(null)  //EXERCISE - try to recover by using new connection
+                .recoverWith(ex -> {
+                    print("got exception: " + ex.getMessage());
+                    return newConnection.apply(1);
+                })  //EXERCISE - try to recover by using new connection
                 .map(p -> "Purchase with id " + p.id + " on " + p.date)
                 .getOrElse((String) null);    // EXERCISE - if you were unable to connect return proper message
 
         print("RESULT 1 : " + result1.equals("Purchase with id 1 on 01-05-2016"));
 
         String result2 = readPurchase.apply(2)
-                .recoverWith(null)  //EXERCISE - try to recover by using new connection
+                .recoverWith(ex -> newConnection.apply(2))  //EXERCISE - try to recover by using new connection
                 .map(p -> "Purchase with id " + p.id + " on " + p.date)
-                .getOrElse((String) null);    // EXERCISE - if you were unable to connect return proper message
+                .getOrElse("UNABLE TO CONNECT");    // EXERCISE - if you were unable to connect return proper message
 
         print("RESULT 2 : " + result2.equals("UNABLE TO CONNECT"));
     }
