@@ -80,6 +80,7 @@ public class EffectsPart4Error {
 
         exerciseLevel1();
         exerciseLevel2();
+        exerciseLevel3();
     }
 
     static void exerciseLevel1() {
@@ -152,8 +153,10 @@ public class EffectsPart4Error {
         //read discount
         //apply happy path  with new BigDecimal("100"))   <------
         //if failure - notify
-        //convert to optiion
-        Function<Customer, Option<BigDecimal>> applyDiscount = null;
+        //convert to option
+        Function<Customer, Option<BigDecimal>> applyDiscount = c -> readDiscount.apply(c)
+                .map(happyPath.apply(new BigDecimal(100.0)))
+                .onFailure(sendNotification).getOption();
 
         print(applyDiscount.apply(data().joe).get().equals(new BigDecimal("70.0")));
         print(applyDiscount.apply(data().jane).isEmpty() == true);

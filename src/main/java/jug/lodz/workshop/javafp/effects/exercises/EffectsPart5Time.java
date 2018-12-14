@@ -46,9 +46,9 @@ public class EffectsPart5Time {
         String result1 = readPurchase.andThen(happyPath).apply(500);
         print(result1);
 
-//        print(" * Time example 2 - waiting... forever");
-//        String result2 = readPurchase.andThen(happyPath).apply(500000000);
-//        print("  * this will never happen: "+result2);
+        //print(" * Time example 2 - waiting... forever");
+        //String result2 = readPurchase.andThen(happyPath).apply(500000000);
+        //print("  * this will never happen: "+result2);
 
 
         print("\n * Time example 3 - composableFuture");
@@ -90,7 +90,7 @@ public class EffectsPart5Time {
         //EXERCISE combine two discounts with BigDecimal::add
         Try<BigDecimal> discount = Try.of(
                 () -> discountForUser.apply(data().joe)
-                        .<BigDecimal, BigDecimal>thenCombine(null, null)
+                        .<BigDecimal, BigDecimal>thenCombine(discountOfTheDay.get(), BigDecimal::add)
                         .get(2, TimeUnit.SECONDS)
         );
 
@@ -110,8 +110,8 @@ public class EffectsPart5Time {
 
 
         //EXERCISE - Map possible future values into try
-        BiFunction<Integer, Throwable, Try<Integer>> handleFuture = null;
-
+        BiFunction<Integer, Throwable, Try<Integer>> handleFuture = (i, ex) ->
+                ex == null ? Try.success(i) : Try.failure(ex);
 
         CompletableFuture<Try<Integer>> parseCorrect = parseService.apply("1").handle(handleFuture);
         CompletableFuture<Try<Integer>> parseIncorrect = parseService.apply("aaa").handle(handleFuture);
@@ -133,7 +133,7 @@ public class EffectsPart5Time {
 
     //EXERCISE
     static <A> Try<A> join(Try<Try<A>> input) {
-        return null;
+        return input.isSuccess() ? input.get() : input.getOrElseGet(Try::failure);
     }
 
 
@@ -161,11 +161,10 @@ public class EffectsPart5Time {
 
     public static void main(String[] args) {
         demo();
-
-//        print("\n\n[EXERCISES]");
-//        exerciseLevel1();
-//        exerciseLevel2();
-//        exerciseLevel3();
+        print("\n\n[EXERCISES]");
+        exerciseLevel1();
+        exerciseLevel2();
+        exerciseLevel3();
     }
 
 
