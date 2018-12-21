@@ -30,7 +30,7 @@ public class StreamsPart1IntroExercises {
     public void simpleMapping_JustAddOneToCreatedStream() throws Exception {
         List<Integer> start = Arrays.asList(1, 2, 3, 4, 5);
 
-        Stream<Integer> result = start.stream(); // complete this line - add one to each value
+        Stream<Integer> result = start.stream().map(i -> i + 1);
 
         assertThat(result.collect(Collectors.toList())).containsExactly(2,3,4,5,6);
     }
@@ -41,7 +41,7 @@ public class StreamsPart1IntroExercises {
      */
     @Test
     public void singleFunctionObjectMapping_extractName() throws Exception {
-        Function<Product,String> getName=null; // complete this, Product class is definied at the bottom of this file
+        Function<Product,String> getName= p -> p.name;
 
         Stream<String> names = products().map(getName);
 
@@ -55,8 +55,9 @@ public class StreamsPart1IntroExercises {
      */
     @Test
     public void multipleFunctionsMapping_extractPriceAndConvertToBigDecimal() throws Exception {
-        Function<Product,String> getPrice=null;      //complete this
-        Function<String,BigDecimal> toBigDecimal=null; //complete this
+        Function<Product,String> getPrice= p -> p.price;
+
+        Function<String,BigDecimal> toBigDecimal= BigDecimal::new;
 
         Stream<BigDecimal> prices =
                 products().map(getPrice).map(toBigDecimal);
@@ -74,12 +75,12 @@ public class StreamsPart1IntroExercises {
      */
     @Test
     public void sumAllPrices_extractPricesChangeToBigDecimalAndReduce() throws Exception {
-        Function<Product,String> getPrice=null;
-        Function<String,BigDecimal> toBigDecimal=null;
+        Function<Product,String> getPrice= p -> p.price;
+        Function<String,BigDecimal> toBigDecimal= BigDecimal::new;
 
         Function<Product, BigDecimal> bigDecimalPrice = getPrice.andThen(toBigDecimal);
 
-        BigDecimal result = products().map(bigDecimalPrice).reduce(null, null);
+        BigDecimal result = products().map(bigDecimalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         assertThat(result).isEqualTo(new BigDecimal("565.5"));
     }
@@ -91,7 +92,7 @@ public class StreamsPart1IntroExercises {
     public void rewriteWithForeach() throws Exception {
         List<String> names=new LinkedList<>();
 
-        products().forEach(null); // write each name to names list
+        products().forEach(p -> names.add(p.name)); // write each name to names list
 
         assertThat(names).containsExactly("tv","console","mouse","speakers");
     }
@@ -104,8 +105,8 @@ public class StreamsPart1IntroExercises {
     @Test
     public void countNumberOfElementsWithMapReduce() throws Exception {
         Integer numberOfProducts = products()
-                .<Integer>map(null)
-                .reduce(null,null);
+                .<Integer>map(p -> 1)
+                .reduce(0,Integer::sum);
 
         assertThat(numberOfProducts).isEqualTo(4);
 
@@ -152,7 +153,7 @@ public class StreamsPart1IntroExercises {
     private <A,B> Collection<B>  mapInTermsOfForEach(Stream<A> input,Function<A,B> f){
         Collection<B> result=new LinkedList<>();
 
-        input.forEach(null);
+        input.forEach(i -> result.add(f.apply(i)));
 
         return result;
     }
@@ -173,9 +174,15 @@ public class StreamsPart1IntroExercises {
     // complete two functions which are used in stream reduce operation
     private <A,B> Collection<B>  mapInTermsOfReduce(Stream<A> input,Function<A,B> f){
         List<B> identity=new LinkedList<>();
-        BiFunction<List<B>,A,List<B>> accumulate=(l,e)->null;
+        BiFunction<List<B>,A,List<B>> accumulate=(l,e)-> {
+            l.add(f.apply(e));
+            return l;
+        };
 
-        BinaryOperator<List<B>> combine=(l1,l2)->null;
+        BinaryOperator<List<B>> combine=(l1,l2)-> {
+            l2.addAll(l1);
+            return l2;
+        };
 
 
         return input.reduce(identity,accumulate,combine);

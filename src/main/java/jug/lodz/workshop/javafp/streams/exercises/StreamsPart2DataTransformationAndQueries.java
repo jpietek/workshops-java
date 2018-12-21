@@ -30,26 +30,25 @@ public class StreamsPart2DataTransformationAndQueries implements Printer {
         println("\n * SKIP HEADER AND DISPLAY THREE FIRST RECORDS");
 
         Transactions.transactions.stream()  // run bare version to check results
-//                .skip(1)  // KATA
-//                .limit(3)
+                .skip(1)  // KATA
+                .limit(3)
                 .forEach(this::println);
 
         println("\n * CONVERT TO DOMAIN OBJECTS");
         // enter readTransactions defined at the bottom
         // It uses csv simulation from Transactions.java
-//        readTransactions().forEach(this::println);
+        readTransactions().forEach(this::println);
 
 
         println("\n * ANY MATCH & ALL MATCH");
-//        boolean anyIsGreaterThan600 = readTransactions().anyMatch(t -> t.amount > 600);  KATA
-//        boolean allAreGreaterThan600 = readTransactions().allMatch(t->t.amount>600);
-//
-//        println("  * any greater than 600 : "+anyIsGreaterThan600);
-//        println("  * all are greater than 600 : "+allAreGreaterThan600);
+        boolean anyIsGreaterThan600 = readTransactions().anyMatch(t -> t.amount > 600);  KATA
+        boolean allAreGreaterThan600 = readTransactions().allMatch(t->t.amount>600);
+
+        println("  * any greater than 600 : "+anyIsGreaterThan600);/        println("  * all are greater than 600 : "+allAreGreaterThan600);
 
         println("\n * FIND RECORDS");
-//        Optional<Transactions.FlatTransaction> any = readTransactions().findAny();   KATA
-//        Optional<Transactions.FlatTransaction> first = readTransactions().findFirst();
+        Optional<Transactions.FlatTransaction> any = readTransactions().findAny();
+        Optional<Transactions.FlatTransaction> first = readTransactions().findFirst();
 //
 //        println("any : "+any);     //CHANGe TO PARALLEL
 //        println("first : "+first);

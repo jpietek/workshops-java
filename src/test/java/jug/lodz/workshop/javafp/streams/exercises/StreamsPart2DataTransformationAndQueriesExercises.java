@@ -29,9 +29,9 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
         Stream<String> stream = Arrays.asList("header", "7", "9", "2", "13", "5").stream();
 
         Integer sum = stream
-//                .skip(???)
-                .<Integer>map(null)
-                .reduce(null, null);
+                .skip(1)
+                .<Integer>map(Integer::parseInt)
+                .reduce(0, Integer::sum);
 
         assertThat(sum).isEqualTo(36);
 
@@ -49,8 +49,8 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
         Stream<String> stream1 = array.stream();
         Stream<String> stream2 = array.stream();
 
-        Optional<Integer> max = stream1.skip(1).map(Integer::parseInt).max(null);
-        Optional<Integer> min = null;
+        Optional<Integer> max = stream1.skip(1).map(Integer::parseInt).max(Integer::compare);
+        Optional<Integer> min = stream2.skip(1).map(Integer::parseInt).min(Integer::compare);
 
         
         assertThat(min.orElse(0)).isEqualTo(2);
@@ -66,13 +66,12 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
     public void findFirstEven() throws Exception {
         List<String> array = Arrays.asList("header", "7", "9", "2", "13", "5");
 
-        //uncomment and complete
-        Optional<Integer> firstEven = null;
-//                array.stream()
-//                .skip(???)
-//                .map(???)
-//                .filter(???)
-//                .find???();
+        Optional<Integer> firstEven =
+                array.stream()
+                .skip(1)
+                .map(Integer::parseInt)
+                .filter(i -> i % 2 == 0)
+                .findFirst();
 
         assertThat(firstEven).isPresent();
         assertThat(firstEven.get()).isEqualTo(2);
@@ -83,7 +82,7 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
      * implement "allMatch" so it checks if all amounts in transactions are greater than zero
      */
     public void areAllTransactionsPositive() throws Exception {
-        boolean allGreaterThanZero = readTransactions().allMatch(null);
+        boolean allGreaterThanZero = readTransactions().allMatch(t -> t.amount > 0);
 
         assertThat(allGreaterThanZero).isTrue();
     }
@@ -95,7 +94,7 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
      */
     public void tryToFindFirstTransactionWithAmountZero() throws Exception {
         Optional<Transactions.FlatTransaction> firstTransactionWithAmountZero = readTransactions()
-                .filter(null)
+                .filter(t -> t.amount == 0)
                 .findFirst();
 
 
@@ -112,8 +111,7 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
      */
     public void findTransactionWithBiggestAmount() throws Exception {
         Optional<Transactions.FlatTransaction> maxTransaction = null;
-//        readTransactions()
-//                .max(???);   //Comparator.comparing(???)
+        readTransactions().max(Comparator.comparing(t -> t.amount));
 
 
         assertThat(maxTransaction).isPresent();
@@ -129,8 +127,8 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
      */
     public void findAllTransactionsIdsFromAccount1() throws Exception {
         List<Integer> result = readTransactions()
-                .filter(null)
-                .<Integer>map(null)
+                .filter(t -> t.accountFrom == 1)
+                .<Integer>map(t -> t.id)
                 .collect(Collectors.toList());
 
         assertThat(result).containsExactly(1,2,7,8);
@@ -148,10 +146,10 @@ public class StreamsPart2DataTransformationAndQueriesExercises {
         LocalDate searchDate = LocalDate.of(2016, 2, 1);
 
         Integer result = readTransactions()
-                .filter(t -> t.accountFrom ==   null)
-                .filter(t -> t.date.isEqual(null))
-                .<Integer>map(null)
-                .reduce(null, null);
+                .filter(t -> t.accountFrom == accountId)
+                .filter(t -> t.date.isEqual(searchDate))
+                .<Integer>map(t -> t.amount)
+                .reduce(0, Integer::sum);
 
         assertThat(result).isEqualTo(716);
 
